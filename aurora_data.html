@@ -6,6 +6,42 @@
     <title>Astrodex - Aurora Data</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="astrodexlogo.png">
+    <style>
+        /* ==========================================================================
+           Mobile Fixes: Solar Wind Speed & At-A-Glance Layout
+           ========================================================================== */
+        @media (max-width: 600px) {
+            /* Standardize label height and alignment across all grid cards */
+            .at-a-glance-column .glimpse-label {
+                font-size: 14px;
+                line-height: 1.2;
+                min-height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            /* Prevent numbers and units from snapping onto separate lines */
+            .at-a-glance-number-row {
+                display: flex;
+                align-items: baseline;
+                justify-content: center;
+                flex-wrap: nowrap;
+                white-space: nowrap;
+            }
+
+            /* Adjust typography sizing to prevent horizontal overflow */
+            .glimpse-number {
+                font-size: 28px;
+            }
+
+            .glimpse-unit {
+                font-size: 14px;
+                margin-left: 4px;
+            }
+        }
+    </style>
 </head>
 <body>
 
