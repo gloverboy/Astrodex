@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrodex - Cloud Cover</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="astrodexlogo.png">
+    <style>
+        /* ── Search UI ── */
+        .cloud-search-wrapper {
+            width: 95%;
+            margin: 40px auto 10px auto;
+            box-sizing: border-box;
+        }
+        .cloud-search-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .input-group {
+            flex: 4;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .cloud-search-row input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: none;
+            background: #222;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .cloud-search-row button {
+            flex: 1;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            background: #4B0082;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .cloud-search-row button:hover { background: #6a00b8; }
+
+        #search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #222;
+            border-radius: 12px;
+            margin-top: 8px;
+            z-index: 2000;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
+        .search-item {
+            padding: 15px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            border-bottom: 1px solid #333;
+        }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background: #333; }
+
+        /* ── Styled Gray Box Header ── */
+        .location-box {
+            width: 95%;
+            margin: 20px auto 20px auto;
+            background-color: #222;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Page-specific override: style.css sets .at-a-glance-wrapper's top
+           margin to 40px, which (combined with the location-box's bottom
+           margin above) made this gap much bigger than the 20px gap between
+           the boxes below it. Zeroing it here on this page only keeps that
+           other page's spacing untouched while matching the gap here. */
+        .at-a-glance-wrapper {
+            margin-top: 0;
+        }
+        .location-header {
+            margin: 0;
+            font-size: 42px;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .location-sub {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #AAAAAA;
+            font-weight: 700;
+        }
+
+        /* ── Forecast grid panel (ClearDarkSky-style hour-by-hour block, Astrodex-themed) ── */
+        .forecast-panel-wrapper {
+            width: 95%;
+            margin: 0 auto 50px auto;
+        }
+        .forecast-panel {
+            background: #222;
+            border-radius: 16px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .forecast-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .forecast-panel-header .widget-header {
+            margin: 0;
+            text-align: left;
+            font-size: 24px;
+        }
+        .forecast-legend {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #CCCCCC;
+            font-weight: 700;
+        }
+        .legend-swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+
+        .forecast-scroll {
+            border-radius: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .forecast-grid {
+            border-collapse: separate;
+            border-spacing: 3px;
+            table-layout: fixed;
+            background: #0B0D17;
+        }
+        .forecast-grid th, .forecast-grid td {
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+        }
+        .forecast-grid thead tr.date-row th {
+            font-size: 13px;
+            color: #FFFFFF;
+            font-weight: 700;
+            padding: 6px 8px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            background: #2b2b2b;
+        }
+        .forecast-grid thead tr.hour-row th {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 8px 4px;
+            white-space: nowrap;
+            background: #2b2b2b;
+            color: #FFFFFF;
+        }
+
+        .forecast-grid .row-label {
+            background: #2b2b2b;
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 15px;
+            color: #fff;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .forecast-grid td.cell {
+            height: 58px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .forecast-grid col.label-col {
+            width: 110px;
+        }
+
+        .forecast-empty {
+            color: #AAAAAA;
+            font-size: 18px;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        @media (max-width: 600px) {
+            .cloud-search-row { flex-direction: column; }
+            .input-group, .cloud-search-row button { width: 100%; }
+            .cloud-search-row input, .cloud-search-row button { font-size: 16px; padding: 16px; }
+            .location-header { font-size: 28px; }
+            .location-box { padding: 20px 15px; }
+            .forecast-panel { padding: 14px; }
+            .forecast-panel-header .widget-header { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="logo-title-container">
+        <img src="astrodexlogo.png" alt="Astrodex Logo" class="header-logo">
+        <h1>Astrodex</h1>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+     <div class="tabs" id="nav-tabs">
+        <a href="home.html">Home</a>
+        <a href="moon_phase.html">Moon Phase</a>
+        <a href="aurora_data.html">Aurora Data</a>
+        <a href="cloud_cover.html" class="active">Cloud Cover</a>
+        <a href="webcams.html">Webcams</a>
+    </div>
+</div>
+
+<div class="cloud-search-wrapper">
+    <div class="cloud-search-row">
+        <div class="input-group">
+            <input type="text" id="city-in" placeholder="Search for a city..." autocomplete="off" oninput="handleSearchInput(this.value)">
+            <div id="search-results"></div>
+        </div>
+        <button onclick="geocodeFetch()">Search</button>
+    </div>
+</div>
+
+<div class="location-box">
+    <h1 class="location-header" id="location-display">Cloud Cover for --</h1>
+
+</div>
+
+<div class="at-a-glance-wrapper">
+    <div class="at-a-glance-container">
+        <div class="at-a-glance-column full-width">
+            <div class="glimpse-label">Total Cloud Cover</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-total">--</span>
+                    <span class="glimpse-unit">%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="at-a-glance-container" style="margin-top: 20px;">
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Temperature</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-temp">--</span>
+                    <span class="glimpse-unit">&deg;F</span>
+                </div>
+            </div>
+        </div>
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Wind Speed</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-wind-speed">--</span>
+                    <span class="glimpse-unit">mph</span>
+                </div>
+            </div>
+        </div>
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Humidity</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-humidity">--</span>
+                    <span class="glimpse-unit">%</span>
+                </div>
+            </div>
+        </div>
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Visibility</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-visibility">--</span>
+                    <span class="glimpse-unit">mi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="forecast-panel-wrapper">
+    <div class="forecast-panel">
+        <div class="forecast-panel-header">
+            <h2 class="widget-header">Hour-by-Hour Astronomy Forecast</h2>
+            <div class="forecast-legend">
+                <div class="legend-item">
+                    <span class="legend-swatch" style="background: rgb(46,204,113);"></span>
+                    Optimal
+                </div>
+                <div class="legend-item">
+                    <span class="legend-swatch" style="background: rgb(241,196,15);"></span>
+                    Okay
+                </div>
+                <div class="legend-item">
+                    <span class="legend-swatch" style="background: rgb(231,76,60);"></span>
+                    Bad
+                </div>
+            </div>
+        </div>
+
+        <div class="forecast-scroll">
+            <table class="forecast-grid" id="forecast-grid">
+                <colgroup id="forecast-colgroup">
+                    <col class="label-col">
+                </colgroup>
+                <thead>
+                    <tr class="date-row" id="date-row">
+                        <th class="row-label">&nbsp;</th>
+                    </tr>
+                    <tr class="hour-row" id="hour-row">
+                        <th class="row-label">Hour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="row-cloud"><th class="row-label">Cloud Cover</th></tr>
+                    <tr id="row-temp"><th class="row-label">Temperature</th></tr>
+                    <tr id="row-wind"><th class="row-label">Wind</th></tr>
+                    <tr id="row-humidity"><th class="row-label">Humidity</th></tr>
+                    <tr id="row-visibility"><th class="row-label">Visibility</th></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="forecast-empty" id="forecast-empty" style="display:none;">Loading forecast data&hellip;</div>
+    </div>
+</div>
+
+<div class="footer-container">
+    <div class="last-update">Last Update: <span id="update-time-footer">--:--</span></div>
+</div>
+
+<script src="location-search.js"></script>
+<script>
+// ── Hamburger ──
+document.getElementById('hamburger').addEventListener('click', () => {
+    const isOpen = document.getElementById('nav-tabs').classList.toggle('open');
+    document.getElementById('hamburger').setAttribute('aria-expanded', isOpen);
+});
+
+// ── State ──
+let lastLat  = 40.7128;
+let lastLon  = -74.0060;
+let lastCity = "New York, US";
+
+// ── Traffic-light color scale ──
+// category: 0 = good (green), 1 = eh (yellow), 2 = bad (red)
+const CATEGORY_COLORS = [
+    [46, 204, 113],  // green - good
+    [241, 196, 15],  // yellow - eh
+    [231, 76, 60]    // red - bad
+];
+
+function colorForCategory(cat) { return CATEGORY_COLORS[cat]; }
+function rgbCss(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
+function luminance(c) { return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]; }
+function textColorFor(c) { return luminance(c) > 140 ? '#000000' : '#FFFFFF'; }
+
+// Lower cloud cover is better for viewing.
+function cloudCategory(pct) {
+    if (pct <= 20) return 0;
+    if (pct <= 50) return 1;
+    return 2;
+}
+// Comfortable temperature range is "good"; extremes are "bad".
+function tempCategory(f) {
+    if (f >= 40 && f <= 75) return 0;
+    if ((f >= 25 && f < 40) || (f > 75 && f <= 90)) return 1;
+    return 2;
+}
+// Calmer wind is better for steady seeing.
+function windCategory(mph) {
+    if (mph <= 10) return 0;
+    if (mph <= 20) return 1;
+    return 2;
+}
+// Lower humidity is better (less dew/fogging risk).
+function humidityCategory(pct) {
+    if (pct <= 50) return 0;
+    if (pct <= 75) return 1;
+    return 2;
+}
+// Higher visibility is better.
+function visibilityCategory(mi) {
+    if (mi >= 7) return 0;
+    if (mi >= 4) return 1;
+    return 2;
+}
+
+function makeCell(text, category) {
+    const color = colorForCategory(category);
+    const td = document.createElement('td');
+    td.className = 'cell';
+    td.style.background = rgbCss(color);
+    td.style.color = textColorFor(color);
+    td.innerText = text;
+    return td;
+}
+
+// Rough day/night heuristic for header shading only (not tied to real sunrise/sunset,
+// which would require an additional API call) - keeps the grid readable without
+// muddying the data-cell colors themselves.
+function isNightHour(hour24) {
+    return hour24 >= 20 || hour24 < 6;
+}
+
+function clearRows() {
+    ['date-row', 'hour-row'].forEach(id => {
+        const row = document.getElementById(id);
+        while (row.children.length > 1) row.removeChild(row.lastChild);
+    });
+    ['row-cloud', 'row-temp', 'row-wind', 'row-humidity', 'row-visibility'].forEach(id => {
+        const row = document.getElementById(id);
+        while (row.children.length > 1) row.removeChild(row.lastChild);
+    });
+}
+
+const LABEL_COL_PX = 110;    // must match .forecast-grid col.label-col width in CSS
+const HOUR_COL_MIN_PX = 52;  // hour columns never get narrower than this
+
+function buildColgroup(hourCount) {
+    const colgroup = document.getElementById('forecast-colgroup');
+    // Keep the label column, drop any previously generated hour columns, then
+    // add one column per hour. Widths are assigned in px (not %) by
+    // layoutForecastColumns() below - on a wide screen that stretches each
+    // hour column to fill the available space; on a narrow screen it clamps
+    // to HOUR_COL_MIN_PX, so the table's natural width exceeds the wrapper
+    // and .forecast-scroll scrolls the whole table - labels included - as a
+    // single unit, on every browser.
+    while (colgroup.children.length > 1) colgroup.removeChild(colgroup.lastChild);
+    for (let i = 0; i < hourCount; i++) {
+        colgroup.appendChild(document.createElement('col'));
+    }
+    layoutForecastColumns();
+}
+
+function layoutForecastColumns() {
+    const scrollDiv = document.querySelector('.forecast-scroll');
+    const colgroup = document.getElementById('forecast-colgroup');
+    if (!scrollDiv || !colgroup) return;
+
+    const hourCols = Array.from(colgroup.children).slice(1); // skip label-col
+    if (!hourCols.length) return;
+
+    const availableWidth = scrollDiv.clientWidth - LABEL_COL_PX;
+    const hourWidth = Math.max(HOUR_COL_MIN_PX, availableWidth / hourCols.length);
+
+    hourCols.forEach(col => { col.style.width = `${hourWidth}px`; });
+}
+
+// Re-run on resize (e.g. rotating a phone, or resizing a desktop window)
+// so the table re-stretches or re-clamps as the available space changes.
+let forecastResizeFrame = null;
+window.addEventListener('resize', () => {
+    if (forecastResizeFrame) return;
+    forecastResizeFrame = requestAnimationFrame(() => {
+        forecastResizeFrame = null;
+        layoutForecastColumns();
+    });
+});
+
+function buildGrid(hours) {
+    clearRows();
+    buildColgroup(hours.length);
+    document.getElementById('forecast-empty').style.display = hours.length ? 'none' : 'block';
+
+    const dateRow = document.getElementById('date-row');
+    const hourRow = document.getElementById('hour-row');
+    const cloudRow = document.getElementById('row-cloud');
+    const tempRow = document.getElementById('row-temp');
+    const windRow = document.getElementById('row-wind');
+    const humidityRow = document.getElementById('row-humidity');
+    const visibilityRow = document.getElementById('row-visibility');
+
+    let lastDateLabel = null;
+    let dateSpanTh = null;
+    let dateSpanCount = 0;
+
+    hours.forEach((h, i) => {
+        // Date header (spans multiple hour columns via colspan)
+        if (h.dateLabel !== lastDateLabel) {
+            if (dateSpanTh) dateSpanTh.colSpan = dateSpanCount;
+            dateSpanTh = document.createElement('th');
+            dateSpanTh.innerText = h.dateLabel;
+            dateRow.appendChild(dateSpanTh);
+            dateSpanCount = 1;
+            lastDateLabel = h.dateLabel;
+        } else {
+            dateSpanCount++;
+        }
+
+        // Hour header
+        const hourTh = document.createElement('th');
+        hourTh.innerText = h.hourLabel;
+        hourTh.className = isNightHour(h.hour24) ? 'night' : 'day';
+        if (h.isNow) hourTh.classList.add('now-col');
+        hourRow.appendChild(hourTh);
+
+        const cloudCell = makeCell(h.cloud + '%', cloudCategory(h.cloud));
+        const tempCell = makeCell(Math.round(h.temp) + '\u00B0F', tempCategory(h.temp));
+        const windCell = makeCell(Math.round(h.wind) + 'mph', windCategory(h.wind));
+        const humidityCell = makeCell(h.humidity + '%', humidityCategory(h.humidity));
+        const visCell = makeCell(h.visibility.toFixed(1) + 'mi', visibilityCategory(h.visibility));
+
+        [cloudCell, tempCell, windCell, humidityCell, visCell].forEach(cell => {
+            if (h.isNow) cell.classList.add('now-col');
+        });
+
+        cloudRow.appendChild(cloudCell);
+        tempRow.appendChild(tempCell);
+        windRow.appendChild(windCell);
+        humidityRow.appendChild(humidityCell);
+        visibilityRow.appendChild(visCell);
+    });
+
+    if (dateSpanTh) dateSpanTh.colSpan = dateSpanCount;
+}
+
+// ── Data & Persistence ──
+async function loadCloudData(lat, lon, cityName) {
+    lastLat = lat;
+    lastLon = lon;
+
+    if (cityName) {
+        lastCity = cityName;
+        document.getElementById('location-display').innerText = `Cloud Cover for ${cityName}`;
+        localStorage.setItem('cc_lat', lat);
+        localStorage.setItem('cc_lon', lon);
+        localStorage.setItem('cc_city', cityName);
+    }
+
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+            `&hourly=cloudcover,temperature_2m,windspeed_10m,relativehumidity_2m,visibility` +
+            `&temperature_unit=fahrenheit&windspeed_unit=mph&forecast_days=2&timezone=auto`;
+        const res = await fetch(url);
+        const d = await res.json();
+        const h = d.hourly;
+
+        const now = new Date();
+        const currentHourStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:00`;
+
+        let startIdx = h.time.indexOf(currentHourStr);
+        if (startIdx < 0) startIdx = 0;
+
+        const count = Math.min(24, h.time.length - startIdx);
+        const hours = [];
+        for (let i = 0; i < count; i++) {
+            const idx = startIdx + i;
+            const t = h.time[idx];
+            const hour24 = parseInt(t.slice(11, 13));
+            const dateObj = new Date(t);
+            hours.push({
+                hour24,
+                hourLabel: `${hour24 % 12 || 12}${hour24 >= 12 ? 'P' : 'A'}`,
+                dateLabel: dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+                isNow: i === 0,
+                cloud: Math.round(h.cloudcover[idx] ?? 0),
+                temp: h.temperature_2m[idx] ?? 0,
+                wind: h.windspeed_10m[idx] ?? 0,
+                humidity: Math.round(h.relativehumidity_2m[idx] ?? 0),
+                visibility: (h.visibility[idx] ?? 0) / 1609.34
+            });
+        }
+
+        buildGrid(hours);
+
+        // At-a-glance values (current hour)
+        if (hours.length) {
+            const cur = hours[0];
+            document.getElementById('glimpse-total').innerText = cur.cloud;
+            document.getElementById('glimpse-temp').innerText = Math.round(cur.temp);
+            document.getElementById('glimpse-wind-speed').innerText = Math.round(cur.wind);
+            document.getElementById('glimpse-humidity').innerText = cur.humidity;
+            document.getElementById('glimpse-visibility').innerText = cur.visibility.toFixed(1);
+        }
+
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('update-time-footer').innerText = timeStr;
+    } catch (err) { console.error(err); }
+}
+
+// location-search.js calls this once a place is picked from the dropdown,
+// the Search button, or Enter in the search box.
+window.onLocationSelected = loadCloudData;
+
+// ── Initialization (Load Saved Data) ──
+function init() {
+    const savedLat = localStorage.getItem('cc_lat');
+    const savedLon = localStorage.getItem('cc_lon');
+    const savedCity = localStorage.getItem('cc_city');
+
+    if (savedLat && savedLon && savedCity) {
+        loadCloudData(savedLat, savedLon, savedCity);
+    } else {
+        loadCloudData(lastLat, lastLon, lastCity);
+    }
+}
+
+init();
+
+// 1-minute auto-refresh
+setInterval(() => {
+    loadCloudData(lastLat, lastLon);
+}, 60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrodex - Webcams</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="astrodexlogo.png">
+    <style>
+        /* ── Full-Width Section Wrapper ── */
+        .home-section-wrapper {
+            width: 95%;
+            margin: 30px auto 0 auto;
+        }
+
+        /* ── Webcams Table ── */
+        .aurora-score-table-wrapper {
+            overflow-x: auto;
+        }
+        .aurora-score-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 3px;
+            margin-top: 5px;
+            background-color: #0B0D17;
+            table-layout: fixed; /* Distributes columns evenly (33.33% each) */
+        }
+        .aurora-score-table th {
+            width: 33.33%;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 20px;
+            color: #FFFFFF;
+            background-color: #2b2b2b;
+            vertical-align: middle;
+        }
+        .aurora-score-table td {
+            width: 33.33%;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 18px;
+            color: #FFFFFF;
+            background-color: #2b2b2b;
+            vertical-align: middle;
+        }
+
+        /* ── Interactive Live Stream Column ── */
+        .aurora-score-table td.stream-cell {
+            padding: 0; /* Remove cell padding so anchor fills the box entirely */
+        }
+        .aurora-score-table td.stream-cell a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            box-sizing: border-box;
+            color: #FFFFFF;
+            text-decoration: none;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .aurora-score-table td.stream-cell a:hover {
+            background-color: #a8a8a8;
+        }
+
+        .aurora-score-table-box {
+            background-color: #222222;
+            border-radius: 12px;
+            padding: 20px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1420px) {
+            .aurora-score-table th { font-size: 15px; padding: 10px 8px; }
+            .aurora-score-table td { font-size: 14px; padding: 10px 8px; }
+            .aurora-score-table td.stream-cell { padding: 0; }
+            .aurora-score-table td.stream-cell a { padding: 12px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="logo-title-container">
+        <img src="astrodexlogo.png" alt="Astrodex Logo" class="header-logo">
+        <h1>Astrodex</h1>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="tabs" id="nav-tabs">
+        <a href="home.html">Home</a>
+        <a href="moon_phase.html">Moon Phase</a>
+        <a href="aurora_data.html">Aurora Data</a>
+        <a href="cloud_cover.html">Cloud Cover</a>
+        <a href="webcams.html" class="active">Webcams</a>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">Webcam Directory</h2>
+    <div class="aurora-score-table-box">
+        <div class="aurora-score-table-wrapper">
+            <table class="aurora-score-table">
+                <thead>
+                    <tr>
+                        <th>Latitude</th>
+                        <th>Location</th>
+                        <th>Live Stream</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>70°N</td>
+                        <td>Kaktovik, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?kaktovik=&az=189.75&elev=91.01&zoom=1" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>67°N</td>
+                        <td>Kobuk, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?dahl-creek=&az=322.38&elev=88.85&zoom=1" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>65°N</td>
+                        <td>Fairbanks, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/@auroraridgecabinalaska/streams" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>65°N</td>
+                        <td>Fairbanks, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?pafa=&az=247.54&elev=98.02&zoom=1.2" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>65°N</td>
+                        <td>Fairbanks, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/watch?v=O52zDyxg5QI" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>65°N</td>
+                        <td>Rampart, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?rampart=&az=359.61&elev=86.28&zoom=1.2" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>64°N</td>
+                        <td>Delta Junction, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/@BirchLeafPhotography/streams" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>61°N</td>
+                        <td>Anchorage, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?lake-hood=&az=87&elev=90&zoom=1.2" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>61°N</td>
+                        <td>Whittier, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?whittier-harbor=&az=241.2&elev=86.59&zoom=1" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>61°N</td>
+                        <td>Thompson Pass, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?thompson-pass=&az=151.6&elev=85.93&zoom=1" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>60°N</td>
+                        <td>Port Graham, Alaska, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?port-graham=&az=317&elev=90&zoom=1" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>59°N</td>
+                        <td>Churchill, Manitoba, Canada</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/watch?v=a0i1Kg6fROg" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>50°N</td>
+                        <td>Vernon, British Columbia, Canada</td>
+                        <td class="stream-cell"><a href="https://silverstar.panocloud.webcam/" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>49°N</td>
+                        <td>Abitibi, Quebec, Canada</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/@auroraliveabitibiquebec/streams" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>48°N</td>
+                        <td>Isle Royale National Park, Michigan, USA</td>
+                        <td class="stream-cell"><a href="https://www.nps.gov/media/webcam/view.htm?id=A3720AFA-E940-6127-6902E95ED431184B" target="_blank" rel="noopener"> Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>48°N</td>
+                        <td>Inkster, North Dakota, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/@northdakotadualauroracamer7115/streams" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>48°N</td>
+                        <td>Skunk Bay, Washington, USA</td>
+                        <td class="stream-cell"><a href="https://www.skunkbayweather.com/SkunkBayWebcam.html" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>48°N</td>
+                        <td>Port Townsend, Washington, USA</td>
+                        <td class="stream-cell"><a href="https://pano.montiscorp.com/?port-townsend=&az=86.98&elev=78.1&zoom=1.2" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>47°N</td>
+                        <td>Batchawana Bay, Ontario, Canada</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/@SuperiorWilds/streams" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>46°N</td>
+                        <td>Mt. Katahdin, Maine, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/watch?v=lzHbycN2CmY" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>45°N</td>
+                        <td>Bar Harbor, Maine, USA</td>
+                        <td class="stream-cell"><a href="https://www.youtube.com/live/RH9wCBhxkxM" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>39°N</td>
+                        <td>Snowmass, Colorado, USA</td>
+                        <td class="stream-cell"><a href="https://aspen.roundshot.com/highlands/#/" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                    <tr>
+                        <td>33°N</td>
+                        <td>Imperial, California, USA</td>
+                        <td class="stream-cell"><a href="https://iid.roundshot.com/salton-south/#/" target="_blank" rel="noopener">Stream Link</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="footer-container" style="margin-top: 50px;">
+    <div class="last-update">Last Update: <span id="update-time">--:--</span></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

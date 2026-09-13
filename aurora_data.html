@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrodex - Aurora Data</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="astrodexlogo.png">
+</head>
+<body>
+
+<div class="header-container">
+    <div class="logo-title-container">
+        <img src="astrodexlogo.png" alt="Astrodex Logo" class="header-logo">
+        <h1>Astrodex</h1>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="tabs" id="nav-tabs">
+        <a href="home.html">Home</a>
+        <a href="moon_phase.html">Moon Phase</a>
+        <a href="aurora_data.html" class="active">Aurora Data</a>
+        <a href="cloud_cover.html">Cloud Cover</a>
+        <a href="webcams.html">Webcams</a>
+    </div>
+</div>
+
+<div class="at-a-glance-wrapper">
+    <div class="at-a-glance-container">
+        <div class="at-a-glance-column full-width">
+            <div class="glimpse-label">Total Aurora Score</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="total-aurora-score">--</span>
+                    <span class="glimpse-unit">/ 100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">G Scale</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-gscale">--</span>
+                    <span class="glimpse-unit">/ G5</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Kp Index</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-kp">--</span>
+                    <span class="glimpse-unit">/ 9</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="at-a-glance-container" style="margin-top: 20px;">
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Solar Wind Speed</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-wind">0.0</span>
+                    <span class="glimpse-unit">km/s</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Proton Density</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-protons">0.0</span>
+                    <span class="glimpse-unit">/cm³</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Bz</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-bz">0.0</span>
+                    <span class="glimpse-unit">nT</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="at-a-glance-column">
+            <div class="glimpse-label">Bt</div>
+            <div class="at-a-glance-box">
+                <div class="at-a-glance-number-row">
+                    <span class="glimpse-number" id="glimpse-bt">0.0</span>
+                    <span class="glimpse-unit">nT</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-content-flex">
+
+    <div class="sub-tabs-container">
+        <h2 class="widget-header">Metrics</h2>
+        <div class="metrics-dropdown" id="metrics-dropdown">
+            <div class="metrics-dropdown-selected" id="metrics-dropdown-selected" onclick="toggleMetricsDropdown()">
+                <span id="metrics-dropdown-label">Solar Wind Speed</span>
+                <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+            </div>
+            <div class="metrics-dropdown-options" id="metrics-dropdown-options">
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'score-tab')">Aurora Score</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'kp-tab')">KP Index</div>
+                <div class="metrics-dropdown-option active" onclick="selectMetric(this, 'wind-tab')">Solar Wind Speed</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'proton-tab')">Proton Density</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'bz-tab')">Bz</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'bt-tab')">Bt</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'proton-flux-tab')">Proton Flux</div>
+            </div>
+        </div>
+        <div class="sub-tabs">
+            <button class="sub-tab" onclick="openAuroraTab(event, 'score-tab')">Aurora Score</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'kp-tab')">KP Index</button>
+            <button class="sub-tab active" onclick="openAuroraTab(event, 'wind-tab')">Solar Wind Speed</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'proton-tab')">Proton Density</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'bz-tab')">Bz</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'bt-tab')">Bt</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'proton-flux-tab')">Proton Flux</button>
+        </div>
+    </div>
+
+    <div class="solar-wind-section">
+
+        <div id="score-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="score-score">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="score-value">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="score-high">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="score-low">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="score-avg">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="score-graph-title">Aurora Score (30 Min)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="score-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-dropdown" id="time-dropdown-score">
+                    <div class="metrics-dropdown-selected" onclick="toggleTimeDropdown('time-dropdown-options-score')">
+                        <span id="time-dropdown-label-score">30m</span>
+                        <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="metrics-dropdown-options" id="time-dropdown-options-score">
+                        <div class="metrics-dropdown-option active" onclick="selectTimeFromDropdown(this, 'score', 30, 'time-dropdown-label-score', 'time-dropdown-options-score')">30m</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'score', 60, 'time-dropdown-label-score', 'time-dropdown-options-score')">1h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'score', 180, 'time-dropdown-label-score', 'time-dropdown-options-score')">3h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'score', 360, 'time-dropdown-label-score', 'time-dropdown-options-score')">6h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'score', 720, 'time-dropdown-label-score', 'time-dropdown-options-score')">12h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'score', 1440, 'time-dropdown-label-score', 'time-dropdown-options-score')">24h</div>
+                    </div>
+                </div>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active" onclick="selectTimeRange(this,'score',30)">30m</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'score',60)">1h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'score',180)">3h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'score',360)">6h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'score',720)">12h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'score',1440)">24h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="kp-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="kp-score">N/A</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="kp-value">--</span><span class="data-unit">/ 9</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="kp-high">--</span><span class="data-unit">/ 9</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="kp-low">--</span><span class="data-unit">/ 9</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="kp-avg">--</span><span class="data-unit">/ 9</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="kp-graph-title">Planetary Kp Index (7 Day)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="kp-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active">7d</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="wind-tab" class="tab-content active-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="wind-score">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="wind-speed">--</span><span class="data-unit">km/s</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="wind-high">--</span><span class="data-unit">km/s</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="wind-low">--</span><span class="data-unit">km/s</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="wind-avg">--</span><span class="data-unit">km/s</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="wind-graph-title">Solar Wind Speed (30 Min)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="wind-speed-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-dropdown" id="time-dropdown-wind">
+                    <div class="metrics-dropdown-selected" onclick="toggleTimeDropdown('time-dropdown-options-wind')">
+                        <span id="time-dropdown-label-wind">30 Minutes</span>
+                        <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="metrics-dropdown-options" id="time-dropdown-options-wind">
+                        <div class="metrics-dropdown-option active" onclick="selectTimeFromDropdown(this, 'wind', 30, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">30 Minutes</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'wind', 60, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">1 Hour</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'wind', 180, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">3 Hours</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'wind', 360, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">6 Hours</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'wind', 720, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">12 Hours</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'wind', 1440, 'time-dropdown-label-wind', 'time-dropdown-options-wind')">24 Hours</div>
+                    </div>
+                </div>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active" onclick="selectTimeRange(this,'wind',30)">30m</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'wind',60)">1h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'wind',180)">3h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'wind',360)">6h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'wind',720)">12h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'wind',1440)">24h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="proton-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-score">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-density">--</span><span class="data-unit">/cm³</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-high">--</span><span class="data-unit">/cm³</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-low">--</span><span class="data-unit">/cm³</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-avg">--</span><span class="data-unit">/cm³</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="proton-graph-title">Proton Density (30 Min)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="proton-density-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-dropdown" id="time-dropdown-proton">
+                    <div class="metrics-dropdown-selected" onclick="toggleTimeDropdown('time-dropdown-options-proton')">
+                        <span id="time-dropdown-label-proton">30m</span>
+                        <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="metrics-dropdown-options" id="time-dropdown-options-proton">
+                        <div class="metrics-dropdown-option active" onclick="selectTimeFromDropdown(this, 'proton', 30, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">30m</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'proton', 60, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">1h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'proton', 180, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">3h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'proton', 360, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">6h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'proton', 720, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">12h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'proton', 1440, 'time-dropdown-label-proton', 'time-dropdown-options-proton')">24h</div>
+                    </div>
+                </div>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active" onclick="selectTimeRange(this,'proton',30)">30m</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'proton',60)">1h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'proton',180)">3h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'proton',360)">6h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'proton',720)">12h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'proton',1440)">24h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bz-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bz-score">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bz-value">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bz-high">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bz-low">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bz-avg">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="bz-graph-title">Bz (30 Min)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="bz-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-dropdown" id="time-dropdown-bz">
+                    <div class="metrics-dropdown-selected" onclick="toggleTimeDropdown('time-dropdown-options-bz')">
+                        <span id="time-dropdown-label-bz">30m</span>
+                        <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="metrics-dropdown-options" id="time-dropdown-options-bz">
+                        <div class="metrics-dropdown-option active" onclick="selectTimeFromDropdown(this, 'bz', 30, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">30m</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bz', 60, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">1h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bz', 180, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">3h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bz', 360, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">6h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bz', 720, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">12h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bz', 1440, 'time-dropdown-label-bz', 'time-dropdown-options-bz')">24h</div>
+                    </div>
+                </div>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active" onclick="selectTimeRange(this,'bz',30)">30m</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bz',60)">1h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bz',180)">3h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bz',360)">6h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bz',720)">12h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bz',1440)">24h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bt-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bt-score">--</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Current</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bt-value">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bt-high">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bt-low">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="bt-avg">--</span><span class="data-unit">nT</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="bt-graph-title">Bt (30 Min)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="bt-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-dropdown" id="time-dropdown-bt">
+                    <div class="metrics-dropdown-selected" onclick="toggleTimeDropdown('time-dropdown-options-bt')">
+                        <span id="time-dropdown-label-bt">30m</span>
+                        <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
+                    </div>
+                    <div class="metrics-dropdown-options" id="time-dropdown-options-bt">
+                        <div class="metrics-dropdown-option active" onclick="selectTimeFromDropdown(this, 'bt', 30, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">30m</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bt', 60, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">1h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bt', 180, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">3h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bt', 360, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">6h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bt', 720, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">12h</div>
+                        <div class="metrics-dropdown-option" onclick="selectTimeFromDropdown(this, 'bt', 1440, 'time-dropdown-label-bt', 'time-dropdown-options-bt')">24h</div>
+                    </div>
+                </div>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active" onclick="selectTimeRange(this,'bt',30)">30m</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bt',60)">1h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bt',180)">3h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bt',360)">6h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bt',720)">12h</div>
+                    <div class="time-toggle-option" onclick="selectTimeRange(this,'bt',1440)">24h</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="proton-flux-tab" class="tab-content">
+            <div class="stats-column">
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Score</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-flux-score">N/A</span><span class="data-unit">/ 100</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Latest (P1)</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-flux-value">N/A</span><span class="data-unit">units</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Maximum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-flux-high">N/A</span><span class="data-unit">units</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Minimum</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-flux-low">N/A</span><span class="data-unit">units</span></div>
+                    </div>
+                </div>
+                <div class="widget-wrapper">
+                    <h2 class="widget-header">Average</h2>
+                    <div class="data-box">
+                        <div class="data-number-row"><span class="data-value" id="proton-flux-avg">N/A</span><span class="data-unit">units</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-column">
+                <div class="widget-wrapper full-height">
+                    <h2 class="widget-header" id="proton-flux-graph-title">ACE EPAM PROTON FLUX (24 Hour)</h2>
+                    <div class="graph-box">
+                        <div class="chart-container">
+                            <canvas id="proton-flux-graph"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-toggle-column">
+                <h2 class="widget-header">Time Range</h2>
+                <div class="time-toggle-container">
+                    <div class="time-toggle-option active">24h</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer-container">
+    <div class="last-update">Last Update: <span id="update-time">--:--</span></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

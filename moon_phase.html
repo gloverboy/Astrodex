@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astrodex - Moon Phase</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="astrodexlogo.png">
+    <style>
+        /* --- Search UI --- */
+        .moon-search-wrapper {
+            width: 95%;
+            margin: 40px auto 10px auto; 
+            box-sizing: border-box;
+        }
+        .moon-search-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .input-group {
+            flex: 4;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .moon-search-row input {
+            width: 100%;
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: none;
+            background: #222;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .moon-search-row button {
+            flex: 1;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            background: #4B0082;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 700;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        #search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #222;
+            border-radius: 12px;
+            margin-top: 8px;
+            z-index: 2000;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            box-sizing: border-box;
+        }
+
+        .search-item {
+            padding: 15px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            border-bottom: 1px solid #333;
+        }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background: #333; }
+
+        /* --- Location Box --- */
+        .location-box {
+            width: 95%;
+            margin: 20px auto 30px auto;
+            background-color: #222;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .location-header {
+            margin: 0;
+            font-size: 42px;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* --- Main Layout --- */
+        .moon-container {
+            display: flex;
+            width: 95%;
+            margin: 0 auto 50px auto; 
+            gap: 30px;
+            align-items: stretch;
+            box-sizing: border-box;
+        }
+
+        .moon-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 580px;
+            min-width: 0;
+        }
+
+        .widget-header {
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .moon-visual-card {
+            background: #222222;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            flex-grow: 1;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .canvas-wrapper {
+            width: 400px;
+            height: 400px;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+        #moon-canvas { width: 100%; height: 100%; }
+
+        .moon-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .data-widget {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .moon-stat-box {
+            background: #222222;
+            border-radius: 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 25px 15px;
+            position: relative;
+            box-sizing: border-box;
+            gap: 4px;
+        }
+
+        .moon-val {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        #phase-pct {
+            color: #ffffff;
+            margin-top: 15px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .loader {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            z-index: 10;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading .loader { display: block; }
+        .loading .moon-val, .loading #phase-pct, .loading .canvas-wrapper { visibility: hidden; }
+
+        .footer-container {
+            position: relative; 
+            width: 100%;
+            background: #4B0082;
+            padding: 15px 30px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            margin-top: 0;
+        }
+
+        .last-update {
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        @media (max-width: 1100px) {
+            .moon-container { flex-direction: column; width: 95%; }
+            .moon-column { min-height: unset; width: 100%; }
+            .canvas-wrapper { width: 100%; max-width: 300px; height: 300px; }
+            .moon-val { font-size: 30px; }
+        }
+
+        @media (max-width: 600px) {
+            .moon-search-row { flex-direction: column; }
+            .input-group, .moon-search-row button { width: 100%; }
+            .moon-search-row input, .moon-search-row button { font-size: 16px; padding: 16px; }
+            .location-header { font-size: 28px; }
+            .location-box { padding: 20px 15px; }
+            .canvas-wrapper { width: 100%; max-width: 260px; height: 260px; }
+            .moon-val { font-size: 26px; }
+            .moon-stat-box { padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <div class="logo-title-container">
+        <img src="astrodexlogo.png" alt="Astrodex Logo" class="header-logo">
+        <h1>Astrodex</h1>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="tabs" id="nav-tabs">
+        <a href="home.html">Home</a>
+        <a href="moon_phase.html" class="active">Moon Phase</a>
+        <a href="aurora_data.html">Aurora Data</a>
+        <a href="cloud_cover.html">Cloud Cover</a>
+        <a href="webcams.html">Webcams</a>
+    </div>
+</div>
+
+<div class="moon-search-wrapper">
+    <div class="moon-search-row">
+        <div class="input-group">
+            <input type="text" id="city-in" placeholder="Search for a city..." autocomplete="off" oninput="handleSearchInput(this.value)">
+            <div id="search-results"></div>
+        </div>
+        <button onclick="geocodeFetch()">Search</button>
+    </div>
+</div>
+
+<div class="location-box">
+    <h1 class="location-header" id="location-display">Moon Phase for --</h1>
+</div>
+
+<div class="moon-container">
+    <div class="moon-column">
+        <h2 class="widget-header">Current Phase</h2>
+        <div id="visual-card" class="moon-visual-card">
+            <div class="loader"></div>
+            <div class="canvas-wrapper">
+                <canvas id="moon-canvas" width="400" height="400"></canvas>
+            </div>
+            <div id="phase-name" class="moon-val" style="font-size: 52px;">--</div>
+            <div id="phase-pct">-- illumination</div>
+        </div>
+    </div>
+
+    <div class="moon-column">
+        <div class="moon-info-grid">
+            <div class="data-widget">
+                <h2 class="widget-header">Moonrise</h2>
+                <div class="moon-stat-box loading-box">
+                    <div class="loader"></div>
+                    <span id="m-rise-time" class="moon-val">--:--</span>
+                    <span id="m-rise-date" class="moon-val">--/--</span>
+                </div>
+            </div>
+            <div class="data-widget">
+                <h2 class="widget-header">Moonset</h2>
+                <div class="moon-stat-box loading-box">
+                    <div class="loader"></div>
+                    <span id="m-set-time" class="moon-val">--:--</span>
+                    <span id="m-set-date" class="moon-val">--/--</span>
+                </div>
+            </div>
+            <div class="data-widget">
+                <h2 class="widget-header">Next New Moon</h2>
+                <div class="moon-stat-box loading-box">
+                    <div class="loader"></div>
+                    <span id="m-new-time" class="moon-val">--:--</span>
+                    <span id="m-new-date" class="moon-val">--/--</span>
+                </div>
+            </div>
+            <div class="data-widget">
+                <h2 class="widget-header">Next Full Moon</h2>
+                <div class="moon-stat-box loading-box">
+                    <div class="loader"></div>
+                    <span id="m-full-time" class="moon-val">--:--</span>
+                    <span id="m-full-date" class="moon-val">--/--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer-container">
+    <div class="last-update">Last Update: <span id="update-time">--:--</span></div>
+</div>
+
+<script src="location-search.js"></script>
+<script>
+let lastLat = 34.7304; 
+let lastLon = -86.5861;
+let lastCity = "Huntsville, AL";
+
+const hamburgerBtn = document.getElementById('hamburger');
+const navTabsEl = document.getElementById('nav-tabs');
+hamburgerBtn.addEventListener('click', () => {
+    const isOpen = navTabsEl.classList.toggle('open');
+    hamburgerBtn.setAttribute('aria-expanded', isOpen);
+});
+
+function convertToStandard(timeStr) {
+    if (!timeStr || timeStr === '--:--') return '--:--';
+    let [hours, minutes] = timeStr.split(':');
+    hours = parseInt(hours);
+    const suffix = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${suffix}`;
+}
+
+function formatDateStr(dateObj) {
+    return dateObj.getFullYear() + '-' + 
+        String(dateObj.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(dateObj.getDate()).padStart(2, '0');
+}
+
+function formatDisplayDate(dateObj) {
+    return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+}
+
+async function executeSearch(lat, lon, cityName) {
+    lastLat = lat;
+    lastLon = lon;
+
+    if (cityName) {
+        lastCity = cityName;
+        document.getElementById('location-display').innerText = `Moon Phase for ${cityName}`;
+        localStorage.setItem('moon_lat', lat);
+        localStorage.setItem('moon_lon', lon);
+        localStorage.setItem('moon_city', cityName);
+    }
+
+    document.getElementById('visual-card').classList.add('loading');
+    document.querySelectorAll('.loading-box').forEach(box => box.classList.add('loading'));
+
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(now.getDate() + 1);
+
+    const localToday = formatDateStr(now);
+    const localTomorrow = formatDateStr(tomorrow);
+
+    const tzPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&forecast_days=1&hourly=temperature_2m`)
+        .then(r => r.json())
+        .then(d => (d.utc_offset_seconds ?? 0) / 3600)
+        .catch(() => Math.round(parseFloat(lon) / 15));
+
+    const phasesPromise = fetch(`https://aa.usno.navy.mil/api/moon/phases/date?date=${localToday}&nump=4`).then(r => r.json());
+
+    try {
+        const offset = await tzPromise;
+        const [pData, rDataToday, rDataTomorrow] = await Promise.all([
+            phasesPromise,
+            fetch(`https://aa.usno.navy.mil/api/rstt/oneday?date=${localToday}&coords=${lat},${lon}&tz=${offset}`).then(r => r.json()),
+            fetch(`https://aa.usno.navy.mil/api/rstt/oneday?date=${localTomorrow}&coords=${lat},${lon}&tz=${offset}`).then(r => r.json())
+        ]);
+        populateMoon(pData, rDataToday, rDataTomorrow, now, tomorrow);
+    } catch(e) {
+        console.error(e);
+    } finally {
+        document.getElementById('visual-card').classList.remove('loading');
+        document.querySelectorAll('.loading-box').forEach(box => box.classList.remove('loading'));
+    }
+}
+
+// location-search.js calls this once a place is picked from the dropdown,
+// the Search button, or Enter in the search box.
+window.onLocationSelected = executeSearch;
+
+function populateMoon(pData, rDataToday, rDataTomorrow, todayObj, tomorrowObj) {
+    const curToday = rDataToday.properties?.data;
+    const curTomorrow = rDataTomorrow.properties?.data;
+
+    // --- Moonrise ---
+    let riseItem = curToday?.moondata?.find(m => m.phen === 'Rise');
+    let riseDateStr = formatDisplayDate(todayObj);
+
+    if (!riseItem && curTomorrow?.moondata) {
+        riseItem = curTomorrow.moondata.find(m => m.phen === 'Rise');
+        riseDateStr = formatDisplayDate(tomorrowObj);
+    }
+
+    // --- Moonset ---
+    let setItem = curToday?.moondata?.find(m => m.phen === 'Set');
+    let setDateStr = formatDisplayDate(todayObj);
+
+    if (!setItem && curTomorrow?.moondata) {
+        setItem = curTomorrow.moondata.find(m => m.phen === 'Set');
+        setDateStr = formatDisplayDate(tomorrowObj);
+    }
+
+    // Set Moonrise & Moonset values
+    document.getElementById('m-rise-time').innerText = convertToStandard(riseItem?.time);
+    document.getElementById('m-rise-date').innerText = riseItem ? riseDateStr : '--/--';
+
+    document.getElementById('m-set-time').innerText = convertToStandard(setItem?.time);
+    document.getElementById('m-set-date').innerText = setItem ? setDateStr : '--/--';
+
+    // Current phase & illumination
+    document.getElementById('phase-name').innerText = curToday?.curphase || "Unknown";
+    document.getElementById('phase-pct').innerText = `${curToday?.fracillum || '0%'} illumination`;
+
+    // --- Next New Moon & Next Full Moon ---
+    const newM = pData.phasedata?.find(x => x.phase === 'New Moon');
+    const full = pData.phasedata?.find(x => x.phase === 'Full Moon');
+
+    document.getElementById('m-new-time').innerText = newM ? convertToStandard(newM.time) : '--:--';
+    document.getElementById('m-new-date').innerText = newM ? `${newM.month}/${newM.day}` : '--/--';
+
+    document.getElementById('m-full-time').innerText = full ? convertToStandard(full.time) : '--:--';
+    document.getElementById('m-full-date').innerText = full ? `${full.month}/${full.day}` : '--/--';
+
+    document.getElementById('update-time').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    
+    drawMoon(parseInt(curToday?.fracillum) || 0, curToday?.curphase?.toLowerCase().includes('waxing'));
+}
+
+function drawMoon(pct, waxing) {
+    const canvas = document.getElementById('moon-canvas');
+    const ctx = canvas.getContext('2d');
+    const cx = 200, cy = 200, r = 180;
+    ctx.clearRect(0, 0, 400, 400);
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fillStyle = '#111'; ctx.fill();
+    const illum = pct / 100;
+    if (pct === 0) return;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = '#ffffff';
+    let xPos, width;
+    if (waxing) { width = (2 * r) * illum; xPos = (cx + r) - width; }
+    else { width = (2 * r) * illum; xPos = cx - r; }
+    ctx.fillRect(xPos, cy - r, width, 2 * r);
+    ctx.restore();
+}
+
+function init() {
+    const savedLat = localStorage.getItem('moon_lat');
+    const savedLon = localStorage.getItem('moon_lon');
+    const savedCity = localStorage.getItem('moon_city');
+
+    if (savedLat && savedLon && savedCity) {
+        executeSearch(savedLat, savedLon, savedCity);
+    } else {
+        executeSearch(lastLat, lastLon, lastCity);
+    }
+}
+
+init();
+
+setInterval(() => {
+    executeSearch(lastLat, lastLon);
+}, 60000);
+</script>
+</body>
+</html>
