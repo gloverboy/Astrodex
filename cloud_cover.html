@@ -588,7 +588,7 @@ async function loadCloudData(lat, lon, cityName) {
             hours.push({
                 hour24,
                 hourLabel: `${hour24 % 12 || 12}${hour24 >= 12 ? 'P' : 'A'}`,
-                dateLabel: dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+                dateLabel: dateObj.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' }),
                 isNow: i === 0,
                 cloud: Math.round(h.cloudcover[idx] ?? 0),
                 temp: h.temperature_2m[idx] ?? 0,
