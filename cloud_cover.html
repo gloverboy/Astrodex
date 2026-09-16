@@ -477,10 +477,16 @@ function layoutForecastColumns() {
     const hourCols = Array.from(colgroup.children).slice(1); // skip label-col
     if (!hourCols.length) return;
 
+    // The "now" column is always the first hour column (isNow: i === 0 in
+    // loadCloudData) and is shown twice as wide as the rest, so it counts
+    // as 2 units when splitting up the available width.
     const availableWidth = scrollDiv.clientWidth - LABEL_COL_PX;
-    const hourWidth = Math.max(HOUR_COL_MIN_PX, availableWidth / hourCols.length);
+    const weightSum = hourCols.length + 1;
+    const unitWidth = Math.max(HOUR_COL_MIN_PX, availableWidth / weightSum);
 
-    hourCols.forEach(col => { col.style.width = `${hourWidth}px`; });
+    hourCols.forEach((col, i) => {
+        col.style.width = `${i === 0 ? unitWidth * 2 : unitWidth}px`;
+    });
 }
 
 // Re-run on resize (e.g. rotating a phone, or resizing a desktop window)
