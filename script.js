@@ -52,6 +52,51 @@ function selectTimeFromDropdown(el, metricKey, minutes, labelId, optionsId) {
     renderMetricChart(metricKey);
 }
 
+
+
+function toggleFaqDropdown() {
+    const options = document.getElementById('faq-dropdown-options');
+    if (options) options.classList.toggle('open');
+}
+
+function selectFaq(el, key) {
+    const label = document.getElementById('faq-dropdown-label');
+    if (label) label.innerText = el.innerText;
+
+    const options = document.getElementById('faq-dropdown-options');
+    if (options) options.classList.remove('open');
+
+    document.querySelectorAll('#faq-dropdown-options .metrics-dropdown-option').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+
+    const answerBox = document.getElementById('faq-answer-box');
+    if (answerBox && FAQ_CONTENT[key]) {
+        answerBox.innerHTML = FAQ_CONTENT[key];
+    }
+}
+
+// Gives the FAQ answer box a fixed height sized to fit its single largest
+// answer, so the box never grows or shrinks as different questions are
+// selected. Measured live (rather than hardcoded) so it stays correct if
+// the wording changes or the page is viewed at a different width, where
+// the same text wraps to a different number of lines.
+function calibrateFaqAnswerHeight() {
+    const answerBox = document.getElementById('faq-answer-box');
+    if (!answerBox) return;
+
+    const currentHTML = answerBox.innerHTML;
+    answerBox.style.minHeight = '0px';
+
+    let tallest = 0;
+    Object.keys(FAQ_CONTENT).forEach(key => {
+        answerBox.innerHTML = FAQ_CONTENT[key];
+        tallest = Math.max(tallest, answerBox.scrollHeight);
+    });
+
+    answerBox.innerHTML = currentHTML;
+    answerBox.style.minHeight = `${tallest}px`;
+}
+
 // Close dropdown when clicking outside
 document.addEventListener('click', function(e) {
     const dropdown = document.getElementById('metrics-dropdown');
@@ -66,6 +111,12 @@ document.addEventListener('click', function(e) {
             if (timeOptions) timeOptions.classList.remove('open');
         }
     });
+
+    const faqDropdown = document.getElementById('faq-dropdown');
+    const faqOptions = document.getElementById('faq-dropdown-options');
+    if (faqDropdown && faqOptions && !faqDropdown.contains(e.target)) {
+        faqOptions.classList.remove('open');
+    }
 });
 
 // ── Charts & Data Storage ───────────────────────────────────────
@@ -79,18 +130,10 @@ let latestKpArr = [];
 
 const selectedRange = { wind: 30, proton: 30, bz: 30, bt: 30, protonFlux: 1440, score: 30, kp: 56 };
 
-// Only 'wind' is visible when the page first loads (it's the default active tab).
-// A chart is only ever created for a metric once its tab has actually been shown -
-// see the note on resizeActiveTabChart() below for why.
-const visitedMetrics = new Set(['wind']);
+// Only 'score' is visible when the page first loads (it's the default active tab).
+// A chart is only ever created for a metric once its tab has actually been shown.
+const visitedMetrics = new Set(['score']);
 
-// 'wind' is the one chart that gets created eagerly (from the first data fetch)
-// rather than through activateTabChart()'s guarded "tab was just shown" path. That
-// guarded path always waits a frame (via requestAnimationFrame) before measuring
-// the container, so the layout - including any not-yet-loaded webfont metrics -
-// has settled. The eager wind chart skips that wait, so it can occasionally lock
-// in a size a beat too early and end up taller/shorter than every other graph.
-// This flag lets us give it the same one-time, next-frame resize the others get.
 let windChartFramedOnce = false;
 
 const metricConfig = {
@@ -120,24 +163,13 @@ function getTimeTag(timeStr) {
     return parts.length > 1 ? parts[1].substring(0, 5) : timeStr.substring(11, 16);
 }
 
-// Physically plausible ranges for each raw feed value. A reading outside
-// its range almost certainly means a sensor glitch or bad parse rather
-// than a real space weather event, so these are treated as invalid data
-// - just like NOAA's own -999 sentinel values - and forward-filled instead
-// of being allowed to flow into the Aurora Score. Bounds are set well
-// beyond the most extreme *real* recorded conditions for each metric, so
-// genuinely extreme (but real) storms are never mistaken for bad data.
 const PLAUSIBLE_RANGES = {
-    windSpeed:     { min: 100,  max: 3000 }, // km/s - typical solar wind is 250-800; recorded extremes are near 2000-2500
-    protonDensity: { min: 0,    max: 100  }, // /cm³ - occasionally spikes hard during CME compression, but not past ~100
-    bz:            { min: -100, max: 100  }, // nT - most extreme recorded storms sit around ±60nT
-    bt:            { min: 0,    max: 100  }  // nT - total field strength; extreme events are around 50nT
+    windSpeed:     { min: 100,  max: 3000 },
+    protonDensity: { min: 0,    max: 100  },
+    bz:            { min: -100, max: 100  },
+    bt:            { min: 0,    max: 100  }
 };
 
-// Helper to fill missing/invalid readings with last valid value.
-// `bounds` is optional - pass a { min, max } object (see PLAUSIBLE_RANGES
-// above) to also reject readings that are numerically valid but
-// physically implausible for that metric.
 function sanitizeDataWithForwardFill(arr, defaultVal = 0, bounds = null) {
     if (!Array.isArray(arr)) return [];
     let lastValid = null;
@@ -206,7 +238,6 @@ function renderMetricChart(metricKey) {
 }
 
 function renderAceEpamProtonChart() {
-    // Explicitly set Proton Flux stat boxes to N/A
     setElementText('proton-flux-score', 'N/A');
     setElementText('proton-flux-value', 'N/A');
     setElementText('proton-flux-high', 'N/A');
@@ -215,7 +246,6 @@ function renderAceEpamProtonChart() {
 
     if (!latestAceEpamRaw.length) return;
 
-    // ~288 points = 24 Hours of 5-minute sampling (sorted oldest to newest)
     const slicedData = latestAceEpamRaw.slice(-288);
     if (!slicedData.length) return;
 
@@ -252,12 +282,10 @@ function formatKpLabel(timeStr) {
 }
 
 function renderKpChart() {
-    // Set KP score box to N/A
     setElementText('kp-score', 'N/A');
 
     if (!latestKpArr.length) return;
 
-    // Hard locked to 7 days (56 bars of 3-hour readings)
     const sliced = latestKpArr.slice(-56);
     if (!sliced.length) return;
 
@@ -362,24 +390,12 @@ const multiColorFillPlugin = {
     }
 };
 
-const chartBorderPlugin = {
-    id: 'chartBorderPlugin',
-    afterDraw: chart => {
-        const { ctx, chartArea } = chart;
-        if (!chartArea) return;
-        const { left, top, right, bottom } = chartArea;
-        ctx.save(); 
-        ctx.strokeStyle = '#FFFFFF'; 
-        ctx.lineWidth = 2; 
-        ctx.strokeRect(left, top, right - left, bottom - top); 
-        ctx.restore();
-    }
-};
+
 
 function getKpBarColor(val) {
-    if (val >= 7) return 'rgba(231, 76, 60, 0.85)';    // Red for 7+
-    if (val >= 4) return 'rgba(241, 196, 15, 0.85)';   // Yellow for 4 - 6.99
-    return 'rgba(46, 204, 113, 0.85)';                 // Green for 3.99 and under
+    if (val >= 7) return 'rgba(231, 76, 60, 0.85)';
+    if (val >= 4) return 'rgba(241, 196, 15, 0.85)';
+    return 'rgba(46, 204, 113, 0.85)';
 }
 
 // ── Tab Management Functions ────────────────────────────────────
@@ -393,27 +409,13 @@ const tabToMetric = {
     'proton-flux-tab': 'protonFlux'
 };
 
-// A chart must never be created (or resized) while its container is
-// display:none - Chart.js has no way to measure a hidden element, so it
-// locks in a bogus size that doesn't correct itself later. On page load,
-// renderAllCharts() used to build all 7 charts immediately, even though 6
-// of those 7 tabs were hidden at that moment. Each hidden chart silently
-// grabbed the wrong size. The first time you clicked into one of those
-// tabs, the container became visible and the browser had to reflow it to
-// the chart's real intended size - which is what showed up as the whole
-// page suddenly, permanently changing size on that first click.
-//
-// The fix: never touch a metric's chart until its tab has actually been
-// shown. The first time a tab is opened we create its chart fresh (now
-// that the container has a real, measurable size); every time after that
-// we just resize the existing chart to be safe.
 function activateTabChart(tabId) {
     const metricKey = tabToMetric[tabId];
     if (!metricKey) return;
 
     if (!visitedMetrics.has(metricKey)) {
         visitedMetrics.add(metricKey);
-        renderMetricChart(metricKey); // first-time creation, container is now visible
+        renderMetricChart(metricKey);
         return;
     }
 
@@ -476,20 +478,47 @@ function clampScore(value) {
     return Math.min(100, Math.max(0, value));
 }
 
-function calculateAuroraScores(windSpeed, protonDensity, bz, bt) {
-    const bzRaw = Math.abs(bz) / 50 * 100;
-    const bzScore = clampScore(Math.round(bz > 0 ? bzRaw * 0.20 : bzRaw));
+// ── Aurora Score weights & "perfect score" (100%) reference points ──
+const AURORA_WEIGHTS = { bz: 0.50, wind: 0.25, bt: 0.15, proton: 0.10 };
+const AURORA_PERFECT_SCORES = { bz: -40, wind: 900, bt: 50, proton: 25 };
 
-    const windScore = clampScore(Math.round(windSpeed / 1000 * 100));
+function averageLastN(arr, n) {
+    if (!Array.isArray(arr) || !arr.length) return 0;
+    const slice = arr.slice(-n);
+    return slice.reduce((sum, v) => sum + v, 0) / slice.length;
+}
 
-    const btScore = clampScore(Math.round(bt / 50 * 100));
-    const protonScore = clampScore(Math.round(protonDensity / 50 * 100));
+function rollingAverage(arr, n) {
+    if (!Array.isArray(arr)) return [];
+    const result = new Array(arr.length);
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+        sum += arr[i];
+        if (i >= n) sum -= arr[i - n];
+        const count = Math.min(i + 1, n);
+        result[i] = sum / count;
+    }
+    return result;
+}
+
+function individualAuroraScore(instantaneous, thirtyMinAvg, perfectScore, capAtZero) {
+    let combined = (thirtyMinAvg + instantaneous) / 2;
+    if (capAtZero) combined = Math.min(combined, 0);
+    const raw = (combined / perfectScore) * 100;
+    return clampScore(Math.round(raw));
+}
+
+function calculateAuroraScores(windInstant, windAvg, protonInstant, protonAvg, bzInstant, bzAvg, btInstant, btAvg) {
+    const bzScore     = individualAuroraScore(bzInstant, bzAvg, AURORA_PERFECT_SCORES.bz, true);
+    const windScore    = individualAuroraScore(windInstant, windAvg, AURORA_PERFECT_SCORES.wind, false);
+    const btScore      = individualAuroraScore(btInstant, btAvg, AURORA_PERFECT_SCORES.bt, false);
+    const protonScore  = individualAuroraScore(protonInstant, protonAvg, AURORA_PERFECT_SCORES.proton, false);
 
     const totalScore = clampScore(Math.round(
-        bzScore     * 0.50 +
-        windScore   * 0.25 +
-        btScore     * 0.15 +
-        protonScore * 0.10
+        bzScore     * AURORA_WEIGHTS.bz +
+        windScore   * AURORA_WEIGHTS.wind +
+        btScore     * AURORA_WEIGHTS.bt +
+        protonScore * AURORA_WEIGHTS.proton
     ));
 
     return { bzScore, windScore, btScore, protonScore, totalScore };
@@ -516,7 +545,6 @@ async function updateWidgets() {
             safeFetchJson('https://services.swpc.noaa.gov/json/ace/epam/ace_epam_5m.json')
         ]);
 
-        // 1. Planetary K-Index & G-Scale Calculation
         let currentKp = null;
         let directGScale = null;
 
@@ -528,7 +556,6 @@ async function updateWidgets() {
             }
         }
 
-        // NOAA's planetary K-index feed is a header row followed by [time_tag, Kp, a_running, station_count] rows
         let kpSeries = [];
         if (Array.isArray(kpData) && kpData.length > 1) {
             const header = kpData[0];
@@ -540,7 +567,6 @@ async function updateWidgets() {
                     .map(row => ({ time_tag: row[timeIdx], kp: parseFloat(row[kpIdx]) }))
                     .filter(d => d.time_tag && !isNaN(d.kp));
             } else {
-                // Fallback: feed already returned as an array of objects
                 kpSeries = kpData
                     .filter(d => d && d.time_tag && d.Kp !== undefined)
                     .map(d => ({ time_tag: d.time_tag, kp: parseFloat(d.Kp) }))
@@ -560,20 +586,14 @@ async function updateWidgets() {
         const calculatedG = directGScale || (currentKp !== null ? calculateGScale(currentKp) : "G0");
         setElementText('glimpse-gscale', calculatedG);
 
-        // 2. Solar Wind Plasma (Speed & Density) - Sorted Oldest to Newest
-        // NOAA's rtsw feed now includes readings from BOTH DSCOVR and ACE at once,
-        // distinguished by the "active" flag. Only the active spacecraft's readings
-        // should be plotted, or the two sources get interleaved into a noisy series.
         const validWind = Array.isArray(windData) ? windData
             .filter(d => d && d.time_tag && (d.active === undefined || d.active === true))
             .sort((a, b) => new Date(a.time_tag) - new Date(b.time_tag)) : [];
 
-        // 3. Solar Wind Magnetometer (Bz & Bt) - Sorted Oldest to Newest
         const validMag = Array.isArray(magData) ? magData
             .filter(d => d && d.time_tag && (d.active === undefined || d.active === true))
             .sort((a, b) => new Date(a.time_tag) - new Date(b.time_tag)) : [];
 
-        // 4. ACE EPAM 5-minute Data - Sorted Oldest to Newest
         const validAceEpam = Array.isArray(aceEpamData) ? aceEpamData
             .filter(d => d && d.time_tag)
             .sort((a, b) => new Date(a.time_tag) - new Date(b.time_tag)) : [];
@@ -611,10 +631,10 @@ async function updateWidgets() {
             const cleanBt = sanitizeDataWithForwardFill(validMag.map(d => d.bt), 5, PLAUSIBLE_RANGES.bt);
 
             const scores = calculateAuroraScores(
-                cleanWindSpeed[cleanWindSpeed.length - 1],
-                cleanProtonDensity[cleanProtonDensity.length - 1],
-                cleanBz[cleanBz.length - 1],
-                cleanBt[cleanBt.length - 1]
+                cleanWindSpeed[cleanWindSpeed.length - 1], averageLastN(cleanWindSpeed, 30),
+                cleanProtonDensity[cleanProtonDensity.length - 1], averageLastN(cleanProtonDensity, 30),
+                cleanBz[cleanBz.length - 1], averageLastN(cleanBz, 30),
+                cleanBt[cleanBt.length - 1], averageLastN(cleanBt, 30)
             );
             setElementText('wind-score', scores.windScore);
             setElementText('proton-score', scores.protonScore);
@@ -624,17 +644,30 @@ async function updateWidgets() {
             setElementText('score-value', scores.totalScore);
             setElementText('score-score', scores.totalScore);
 
-            // Build a matching historical series of the total aurora score for the score graph
+            const windAvgFull = rollingAverage(cleanWindSpeed, 30);
+            const protonAvgFull = rollingAverage(cleanProtonDensity, 30);
+            const bzAvgFull = rollingAverage(cleanBz, 30);
+            const btAvgFull = rollingAverage(cleanBt, 30);
+
             const seriesLen = Math.min(cleanWindSpeed.length, cleanProtonDensity.length, cleanBz.length, cleanBt.length);
             const windTail = cleanWindSpeed.slice(-seriesLen);
             const protonTail = cleanProtonDensity.slice(-seriesLen);
             const bzTail = cleanBz.slice(-seriesLen);
             const btTail = cleanBt.slice(-seriesLen);
+            const windAvgTail = windAvgFull.slice(-seriesLen);
+            const protonAvgTail = protonAvgFull.slice(-seriesLen);
+            const bzAvgTail = bzAvgFull.slice(-seriesLen);
+            const btAvgTail = btAvgFull.slice(-seriesLen);
             const timeSource = (validWind.length >= validMag.length ? validWind : validMag).slice(-seriesLen);
 
             latestScoreArr = timeSource.map((d, i) => ({
                 time_tag: d.time_tag,
-                score: calculateAuroraScores(windTail[i], protonTail[i], bzTail[i], btTail[i]).totalScore
+                score: calculateAuroraScores(
+                    windTail[i], windAvgTail[i],
+                    protonTail[i], protonAvgTail[i],
+                    bzTail[i], bzAvgTail[i],
+                    btTail[i], btAvgTail[i]
+                ).totalScore
             }));
         } else {
             latestScoreArr = [];
@@ -646,8 +679,6 @@ async function updateWidgets() {
         latestKpArr = kpSeries;
         renderAllCharts();
 
-        // Give the eagerly-created wind chart the same "settle, then resize"
-        // treatment every other chart gets when its tab is first shown.
         if (!windChartFramedOnce) {
             windChartFramedOnce = true;
             requestAnimationFrame(() => {
@@ -764,7 +795,7 @@ function updateChart(id, labels, data, yMin, yMax, fillColor = null, unit = '') 
                 }
             }
         },
-        plugins: id === 'bz-graph' ? [chartBorderPlugin, bzFillPlugin] : [chartBorderPlugin, multiColorFillPlugin]
+        plugins: id === 'bz-graph' ? [bzFillPlugin] : [multiColorFillPlugin]
     });
 }
 
@@ -850,11 +881,11 @@ function updateKpBarChart(id, labels, data) {
                         autoSkip: true,
                         maxTicksLimit: 16
                     },
-                    grid: { display: false }
+                    grid: { display: true }
                 }
             }
         },
-        plugins: [chartBorderPlugin]
+        plugins: []
     });
 }
 
@@ -953,7 +984,7 @@ function updateEpamChart(id, labels, datasets) {
                 }
             }
         },
-        plugins: [chartBorderPlugin]
+        plugins: []
     });
 }
 
@@ -970,6 +1001,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    calibrateFaqAnswerHeight();
+
     updateWidgets();
-    setInterval(updateWidgets, 30000); // Auto refresh data every 30 seconds
+    setInterval(updateWidgets, 30000);
+});
+
+let faqResizeTimeout;
+window.addEventListener('resize', () => {
+    if (!document.getElementById('faq-answer-box')) return;
+    clearTimeout(faqResizeTimeout);
+    faqResizeTimeout = setTimeout(calibrateFaqAnswerHeight, 200);
 });

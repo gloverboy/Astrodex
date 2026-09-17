@@ -10,6 +10,7 @@
         /* ==========================================================================
            Mobile Fixes: Solar Wind Speed & At-A-Glance Layout
            ========================================================================== */
+           
         @media (max-width: 600px) {
             /* Standardize label height and alignment across all grid cards */
             .at-a-glance-column .glimpse-label {
@@ -151,33 +152,33 @@
         <h2 class="widget-header">Metrics</h2>
         <div class="metrics-dropdown" id="metrics-dropdown">
             <div class="metrics-dropdown-selected" id="metrics-dropdown-selected" onclick="toggleMetricsDropdown()">
-                <span id="metrics-dropdown-label">Solar Wind Speed</span>
+                <span id="metrics-dropdown-label">Aurora Score</span>
                 <span class="metrics-dropdown-arrow"><span></span><span></span><span></span></span>
             </div>
             <div class="metrics-dropdown-options" id="metrics-dropdown-options">
-                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'score-tab')">Aurora Score</div>
-                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'kp-tab')">KP Index</div>
-                <div class="metrics-dropdown-option active" onclick="selectMetric(this, 'wind-tab')">Solar Wind Speed</div>
+                <div class="metrics-dropdown-option active" onclick="selectMetric(this, 'score-tab')">Aurora Score</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'wind-tab')">Solar Wind Speed</div>
                 <div class="metrics-dropdown-option" onclick="selectMetric(this, 'proton-tab')">Proton Density</div>
                 <div class="metrics-dropdown-option" onclick="selectMetric(this, 'bz-tab')">Bz</div>
                 <div class="metrics-dropdown-option" onclick="selectMetric(this, 'bt-tab')">Bt</div>
                 <div class="metrics-dropdown-option" onclick="selectMetric(this, 'proton-flux-tab')">Proton Flux</div>
+                <div class="metrics-dropdown-option" onclick="selectMetric(this, 'kp-tab')">KP Index</div>
             </div>
         </div>
         <div class="sub-tabs">
-            <button class="sub-tab" onclick="openAuroraTab(event, 'score-tab')">Aurora Score</button>
-            <button class="sub-tab" onclick="openAuroraTab(event, 'kp-tab')">KP Index</button>
-            <button class="sub-tab active" onclick="openAuroraTab(event, 'wind-tab')">Solar Wind Speed</button>
+            <button class="sub-tab active" onclick="openAuroraTab(event, 'score-tab')">Aurora Score</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'wind-tab')">Solar Wind Speed</button>
             <button class="sub-tab" onclick="openAuroraTab(event, 'proton-tab')">Proton Density</button>
             <button class="sub-tab" onclick="openAuroraTab(event, 'bz-tab')">Bz</button>
             <button class="sub-tab" onclick="openAuroraTab(event, 'bt-tab')">Bt</button>
             <button class="sub-tab" onclick="openAuroraTab(event, 'proton-flux-tab')">Proton Flux</button>
+            <button class="sub-tab" onclick="openAuroraTab(event, 'kp-tab')">KP Index</button>
         </div>
     </div>
 
     <div class="solar-wind-section">
 
-        <div id="score-tab" class="tab-content">
+        <div id="score-tab" class="tab-content active-content">
             <div class="stats-column">
                 <div class="widget-wrapper">
                     <h2 class="widget-header">Score</h2>
@@ -298,7 +299,7 @@
             </div>
         </div>
 
-        <div id="wind-tab" class="tab-content active-content">
+        <div id="wind-tab" class="tab-content">
             <div class="stats-column">
                 <div class="widget-wrapper">
                     <h2 class="widget-header">Score</h2>
