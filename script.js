@@ -993,6 +993,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburgerBtn = document.getElementById('hamburger');
     const navTabsEl = document.getElementById('nav-tabs');
 
+    setTimeout(() => {
+    activateTabChart('score-tab');
+}, 100);
+
     if (hamburgerBtn && navTabsEl) {
         hamburgerBtn.addEventListener('click', () => {
             const isOpen = navTabsEl.classList.toggle('open');
