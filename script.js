@@ -120,6 +120,11 @@ document.addEventListener('click', function(e) {
 });
 
 // ── Charts & Data Storage ───────────────────────────────────────
+// Single knob for every chart's internal left/right breathing room.
+// Change this one number to adjust all graphs (wind, proton, bz, bt,
+// proton flux, kp) at once.
+const CHART_PADDING = 10;
+
 const charts = {};
 
 let latestWindArr = [];
@@ -148,11 +153,11 @@ const metricConfig = {
 
 // 5 Specific ACE EPAM Channels Requested
 const epamChannels = [
-    { key: 'p1', label: 'P1 (47-68 keV)',     color: '#FF0000' }, // Red
-    { key: 'p3', label: 'P3 (115-195 keV)',   color: '#0000FF' }, // Blue
-    { key: 'p5', label: 'P5 (310-580 keV)',   color: '#00FF00' }, // Green
-    { key: 'p6', label: 'P6 (795-1193 keV)',  color: '#FF00FF' }, // Magenta
-    { key: 'p7', label: 'P7 (1060-1900 keV)', color: '#00FFFF' }  // Cyan
+    { key: 'p1', label: '47-68 keV',     color: '#FF0000' }, // Red
+    { key: 'p3', label: '115-195 keV',   color: '#0000FF' }, // Blue
+    { key: 'p5', label: '310-580 keV',   color: '#00FF00' }, // Green
+    { key: 'p6', label: '795-1193 keV',  color: '#FF00FF' }, // Magenta
+    { key: 'p7', label: '1060-1900 keV', color: '#00FFFF' }  // Cyan
 ];
 
 const rangeLabels = { 30: '30 Min', 60: '1 Hr', 180: '3 Hr', 360: '6 Hr', 720: '12 Hr', 1440: '24 Hr' };
@@ -237,7 +242,17 @@ function renderMetricChart(metricKey) {
     if (titleEl) titleEl.innerText = `${cfg.label} (${rangeLabels[minutes] || minutes + ' Min'})`;
 }
 
+function renderEpamLegend() {
+    const legendEl = document.getElementById('epam-legend');
+    if (!legendEl || legendEl.dataset.rendered) return;
+    legendEl.innerHTML = epamChannels.map(ch =>
+        `<span class="epam-legend-item"><span class="epam-legend-swatch" style="background:${ch.color}"></span>${ch.label}</span>`
+    ).join('');
+    legendEl.dataset.rendered = 'true';
+}
+
 function renderAceEpamProtonChart() {
+    renderEpamLegend();
     setElementText('proton-flux-score', 'N/A');
     setElementText('proton-flux-value', 'N/A');
     setElementText('proton-flux-high', 'N/A');
@@ -278,7 +293,9 @@ function formatKpLabel(timeStr) {
     if (isNaN(d.getTime())) return timeStr;
     const datePart = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' });
     const timePart = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' });
-    return `${datePart} ${timePart}`;
+    
+    // Returning an array tells Chart.js to stack the strings on separate lines
+    return [datePart, timePart];
 }
 
 function renderKpChart() {
@@ -745,6 +762,7 @@ function updateChart(id, labels, data, yMin, yMax, fillColor = null, unit = '') 
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            layout: { autoPadding: false, padding: { left: CHART_PADDING, right: CHART_PADDING } },
             interaction: {
                 mode: 'index',
                 intersect: false
@@ -782,16 +800,20 @@ function updateChart(id, labels, data, yMin, yMax, fillColor = null, unit = '') 
                 y: { 
                     min: yMin, 
                     max: yMax, 
-                    afterFit(scale) { scale.width = 65; }, 
+                    afterFit(scale) { scale.width = 40; }, 
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: { color: '#FFF', callback: val => val.toFixed(0) }, 
                     grid: { color: 'rgba(255,255,255,0.1)' } 
                 },
                 x: { 
+                    afterFit(scale) { scale.height = 50; },
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: { 
                         color: '#FFF',
                         minRotation: 45,
                         maxRotation: 45 
-                    } 
+                    },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
                 }
             }
         },
@@ -833,6 +855,7 @@ function updateKpBarChart(id, labels, data) {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            layout: { autoPadding: false, padding: { left: CHART_PADDING, right: CHART_PADDING } },
             interaction: {
                 mode: 'index',
                 intersect: false
@@ -869,11 +892,14 @@ function updateKpBarChart(id, labels, data) {
                 y: {
                     min: 0,
                     max: 9,
-                    afterFit(scale) { scale.width = 65; },
+                    afterFit(scale) { scale.width = 40; },
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: { color: '#FFF', stepSize: 1, callback: val => val.toFixed(0) },
                     grid: { color: 'rgba(255,255,255,0.1)' }
                 },
                 x: {
+                    afterFit(scale) { scale.height = 50; },
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: {
                         color: '#FFF',
                         minRotation: 45,
@@ -881,7 +907,7 @@ function updateKpBarChart(id, labels, data) {
                         autoSkip: true,
                         maxTicksLimit: 16
                     },
-                    grid: { display: true }
+                    grid: { color: 'rgba(255,255,255,0.1)' }
                 }
             }
         },
@@ -909,24 +935,13 @@ function updateEpamChart(id, labels, datasets) {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
+            layout: { autoPadding: false, padding: { left: CHART_PADDING, right: CHART_PADDING } },
             interaction: {
                 mode: 'index',
                 intersect: false
             },
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        color: '#FFFFFF',
-                        font: { size: 10, weight: 'bold' },
-                        usePointStyle: true,
-                        pointStyle: 'line',
-                        boxWidth: 20,
-                        boxHeight: 4,
-                        padding: 8
-                    }
-                },
+                legend: { display: false },
                 tooltip: {
                     enabled: true,
                     mode: 'index',
@@ -953,11 +968,12 @@ function updateEpamChart(id, labels, datasets) {
                     max: 100000,
                     title: {
                         display: true,
-                        text: 'Particles / (cm² s sr MeV)',
+                       
                         color: '#FFF',
                         font: { size: 11, weight: 'bold' }
                     },
-                    afterFit(scale) { scale.width = 65; },
+                    afterFit(scale) { scale.width = 40; },
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: {
                         color: '#FFF',
                         callback: function(val) {
@@ -974,6 +990,8 @@ function updateEpamChart(id, labels, datasets) {
                     grid: { color: 'rgba(255, 255, 255, 0.1)' }
                 },
                 x: {
+                    afterFit(scale) { scale.height = 50; },
+                    border: { display: true, color: 'rgba(255,255,255,0.4)', width: 2 },
                     ticks: {
                         color: '#FFF',
                         maxTicksLimit: 12,

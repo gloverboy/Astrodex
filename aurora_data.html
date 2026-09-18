@@ -42,6 +42,56 @@
                 margin-left: 4px;
             }
         }
+
+        /* ── FAQ Box ── */
+        .home-section-wrapper {
+            width: 95%;
+            margin: 30px auto 0 auto;
+        }
+        .home-info-box {
+            background-color: #222222;
+            border-radius: 12px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .home-info-box p {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+            color: #FFFFFF;
+        }
+
+        @media (max-width: 1420px) {
+            .home-info-box p { font-size: 16px; }
+        }
+
+        /* ── EPAM Legend (overlaid top-left of the proton flux graph) ── */
+        .epam-legend {
+            position: absolute;
+            top: 10px;
+            left: 80px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            pointer-events: none;
+        }
+        .epam-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1.3;
+        }
+        .epam-legend-swatch {
+            width: 14px;
+            height: 2px;
+            border-radius: 1px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
     </style>
     <!-- Cloudflare Web Analytics -->
     <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d7ddda666e1c4e2caee769e44b924ebf"}'></script>
@@ -617,6 +667,7 @@
                     <h2 class="widget-header" id="proton-flux-graph-title">ACE EPAM PROTON FLUX (24 Hour)</h2>
                     <div class="graph-box">
                         <div class="chart-container">
+                            <div class="epam-legend" id="epam-legend"></div>
                             <canvas id="proton-flux-graph"></canvas>
                         </div>
                     </div>
@@ -630,6 +681,13 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<div class="home-section-wrapper" style="margin-bottom: 30px;">
+    <h2 class="widget-header">FAQ</h2>
+    <div class="home-info-box">
+        <p>FAQ IS COMING SOON</p>
     </div>
 </div>
 

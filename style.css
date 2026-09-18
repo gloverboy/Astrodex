@@ -1,3 +1,9 @@
+/* Single knob for every graph box's outer padding (desktop and mobile
+   both read this). Change this one value to adjust all graphs at once. */
+:root {
+    --graph-box-padding: 2px;
+}
+
 * {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
@@ -166,7 +172,7 @@ h1 {
     display: flex;
     width: 95%;
     margin: 0 auto 50px auto;
-    gap: 30px;
+    gap: 20px;
     align-items: stretch;
     flex: 1 0 auto;
 }
@@ -312,7 +318,7 @@ h1 {
 .graph-box {
     background: #222222;
     border-radius: 12px;
-    padding: 20px;
+    padding: var(--graph-box-padding);
     display: flex;
     flex-direction: column;
     align-items: center;      
@@ -503,7 +509,7 @@ canvas {
     .stats-column .widget-wrapper:first-child { grid-column: 1 / -1; }
     .graph-column { width: 100%; height: auto; min-height: 400px; }
     .graph-column .widget-wrapper.full-height { width: 100%; height: auto; }
-    .graph-box { width: 100%; height: auto; padding: 12px; flex: none; min-height: 400px; }
+    .graph-box { width: 100%; height: auto; padding: var(--graph-box-padding); flex: none; min-height: 400px; }
     .chart-container { height: 380px; width: 100%; min-height: 380px; max-height: 380px; }
     canvas { width: 100% !important; height: 100% !important; }
     .time-toggle-column { width: 100%; height: auto; }
