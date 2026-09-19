@@ -42,43 +42,6 @@
             .home-info-box p { font-size: 16px; }
         }
 
-        /* ── Aurora Score Table ── */
-        .aurora-score-table-wrapper {
-            overflow-x: auto;
-        }
-        .aurora-score-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 3px;
-            margin-top: 5px;
-            background-color: #0B0D17;
-        }
-        .aurora-score-table th,
-        .aurora-score-table td {
-            padding: 12px 16px;
-            text-align: center;
-            font-size: 18px;
-            color: #FFFFFF;
-            background-color: #2b2b2b;
-        }
-        .aurora-score-table-box {
-            background-color: #222222;
-            border-radius: 12px;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 20px;
-        }
-
-        .aurora-score-table thead th {
-            font-size: 20px;
-        }
-
-        @media (max-width: 1420px) {
-            .aurora-score-table th,
-            .aurora-score-table td { font-size: 14px; padding: 10px 8px; }
-            .aurora-score-table thead th { font-size: 15px; }
-        }
-
         /* ── Social Links ── */
         .social-links-grid {
             display: flex;
@@ -141,7 +104,7 @@
 </div>
 
 <div class="home-section-wrapper">
-    <h2 class="widget-header">What is Astrodex</h2>
+    <h2 class="widget-header">What is Astrodex?</h2>
     <div class="home-info-box">
         <p>Astrodex is a website that provides all of the information you need for stargazing, aurora hunting, and astrophotography. 
             The data updates live every minute, and is based on your location. It has moon data, space weather data, cloud data, and webcams.</p>
@@ -159,56 +122,13 @@
 <div class="home-section-wrapper">
     <h2 class="widget-header">Aurora Data</h2>
     <div class="home-info-box">
-        <p>This tab shows useful space weather data for tracking the aurora. It shows the KP index, the Solar Wind Speed, Proton Density, Bz and Bt. 
+        <p>This tab shows useful space weather data for tracking the aurora. It shows the Aurora Score, KP index, ACE EPAM Proton Flux, G Scale, Solar Wind Speed, Proton Density, Bz and Bt. 
             It also graphs the data, so you can see the past data at a glimpse. You can choose between 30 minutes, 1 hour, 3 hours, 6 hours, 12 hours and 24 hours.
-        <br>
-        <br>
-<p>Bz: The north - south vertical direction of the solar wind’s magnetic field. Opposite poles attract, so when the Bz points south (Bz < 0), strong storms can occur. Bz is the most important metric for auroras, as having a positive Bz can wipe out any other good data. 
-<br><br>Bt: The total strength of the magnetic field carried by the solar wind. The higher this is, the higher the potential energy for a geomagnetic storm. 
-<br><br>Proton Density: The amount of solar particles per cubic centimeter in the solar wind. Higher density means more particles in the atmosphere, which collide with gas molecules and create brighter, more intense auroral displays. 
-<br><br>Solar Wind Speed: A measure of how fast solar particles are approaching the earth. Higher speeds deliver more energy to the Earth’s magnetic field, powering geomagnetic storms
-<br><br>KP Index: This is a global scale that ranges from 0 (lowest) to 9 (highest). This scale quantifies disturbances in the Earth’s magnetic field over a 3 hour window. KP Index indicates how far south the aurora viewing line moves.
-<br><br>ACE EPAM Proton Flux: This is measurements from the Electron, Proton and Alpha Monitor on NASA’s ACE satellite. This tracks the protons moving approaching Earth. When the protons start rising, it is usually a good indicator that a CME is incoming. 
-<p></p>
         </p>
     </div>
 </div>
 
-<div class="home-section-wrapper">
-    <h2 class="widget-header">The Aurora Score</h2>
-    <div class="home-info-box">
-        <p>The Aurora Score is a number calculated based on all of the space weather data. This number provides an at a glimpse guage on where the aurora can be seen from. It was created using historical data, and where historical auroras could be seen from.
-    It goes from 0 - 100, with 0 being the worst data imaginable, and 100 being the best. Rough estimates as to where the aurora can be seen from based on the score are listed below.</p>
-    </div>
 
-
-    
-    <h2 class="widget-header" style="margin-top: 20px;">Aurora Score Table</h2>
-    <div class="aurora-score-table-box">
-        <div class="aurora-score-table-wrapper">
-            <table class="aurora-score-table">
-                <thead>
-                    <tr>
-                        <th>Aurora Score</th>
-                        <th>Approximate Lowest Geographic Latitude</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>0</td><td>68°N (Barrow, Alaska, United States)</td></tr>
-                    <tr><td>10</td><td>65°N (Fairbanks, Alaska, United States)</td></tr>
-                    <tr><td>20</td><td>58°N (Juneau, Alaska, United States)</td></tr>
-                    <tr><td>30</td><td>50°N (Winnipeg, Manitoba, Canada)</td></tr>
-                    <tr><td>40</td><td>45°N (Minneapolis, Minnesota, United States)</td></tr>
-                    <tr><td>50</td><td>41°N (Chicago, Illinois, United States)</td></tr>
-                    <tr><td>60</td><td>37°N (San Francisco, California, United States)</td></tr>
-                    <tr><td>70</td><td>33°N (Phoenix, Arizona, United States)</td></tr>
-                    <tr><td>80</td><td>27°N (Tampa Bay, Florida, United States)</td></tr>
-                    <tr><td>90</td><td>20°N (Mexico City, Mexico)</td></tr>
-                    <tr><td>100</td><td>< 20°N (The Caribbean)</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 <div class="home-section-wrapper">
@@ -230,10 +150,10 @@
 <div class="home-section-wrapper">
     <h2 class="widget-header">Credits</h2>
     <div class="home-info-box">
-        <p>Live data updates once every minute to provide real time information. Space Weather data provided by NOAA SPWC. Moon data provided by the U.S. Naval Observatory. 
+        <p>Live data updates once every minute to provide real time information. Space Weather data provided by NOAA SWPC. Moon data provided by the U.S. Naval Observatory. 
             Weather data provided by Open-Meteo.com. Location search provided by Nominatim, © OpenStreetMap contributors. 
         Live webcams provided by their respective owners, see links for more. Charts are generated in real time. 
-        Astrodex was created by a Zach, a Mechanical Engineering student who happens to love weather and astronomy. 
+        Astrodex was created by Zach, a Mechanical Engineering student who happens to love weather and astronomy. 
         Follow my social media for updates.</p>
     </div>
 </div>

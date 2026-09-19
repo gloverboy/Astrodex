@@ -684,10 +684,116 @@
     </div>
 </div>
 
-<div class="home-section-wrapper" style="margin-bottom: 30px;">
-    <h2 class="widget-header">FAQ</h2>
+
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is the Aurora Score?</h2>
     <div class="home-info-box">
-        <p>FAQ IS COMING SOON</p>
+        <p>The Aurora Score is a number calculated based on all of the space weather data. This number provides an at a glimpse gauge on where the aurora can be seen from. It was created using historical data, and where historical auroras could be seen from.
+    It goes from 0 - 100, with 0 being the worst data imaginable, and 100 being the best. Rough estimates as to where the aurora can be seen from based on the score are located on the Aurora Score table.</p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">How is the Aurora Score calculated?</h2>
+    <div class="home-info-box">
+        <p>The Aurora Score is calculated using four main data sets. These are the Bz, Bt, Solar Wind Speed, and Proton Density. 
+            For each parameter, a maximum score (score to warrant a 100 on the scale) and weight are assigned. These values are as follows:
+            <br>Bz: Weight: 50/100 - Max Score: -40 nT
+            <br>Bt: Weight: 15/100 - Max Score: 50 nT
+            <br>Solar Wind Speed: Weight: 25/100 - Max Score: 900 km/s
+            <br>Proton Density: Weight: 10/100 - Max Score: 25 /cm³
+            <br>
+            <br>The Aurora Score uses a combination of the 30 minute average and the instantaneous data. To do this, the following formula is used:
+            <br> Aurora Score <sub>Individual Data Set</sub> = (30 Minute Average + Instantaneous Data)(1/2) * (1 / Max Score of Data Set) * (100)
+            <br>
+            <br>Then, the individual data set score is multiplied by its weight, using the following formula:
+            <br> Aurora Score <sub>Overall Score Factor</sub> = (Aurora Score <sub>Individual Data Set</sub>) * (Total score set weight / 100)
+            <br>
+            <br>Finally, the overall Aurora Score is calculated by summing all of the individual data set scores together, using the following formula:
+            <br> Aurora Score <sub>Overall Score</sub> = (Aurora Score <sub>Bz</sub>) + (Aurora Score <sub>Bt</sub>) + (Aurora Score <sub>Solar Wind Speed</sub>) + (Aurora Score <sub>Proton Density</sub>)
+            <br>
+            <br>DISCLAIMER: The Aurora Score is not an official data set, and should not be used as so. It is simply a tool that can help gauge where the aurora MAY be seen from. 
+            The Aurora Score formula may be changed with more testing.
+            The score formula was created by Zach, the creator of this website. Please do not steal it without asking. 
+        </p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">Aurora Score Table</h2>
+    <div class="aurora-score-table-box">
+        <div class="aurora-score-table-wrapper">
+            <table class="aurora-score-table">
+                <thead>
+                    <tr>
+                        <th>Aurora Score</th>
+                        <th>Approximate Lowest Geographic Latitude</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>0</td><td>68°N (Barrow, Alaska, United States)</td></tr>
+                    <tr><td>10</td><td>65°N (Fairbanks, Alaska, United States)</td></tr>
+                    <tr><td>20</td><td>58°N (Juneau, Alaska, United States)</td></tr>
+                    <tr><td>30</td><td>50°N (Winnipeg, Manitoba, Canada)</td></tr>
+                    <tr><td>40</td><td>45°N (Minneapolis, Minnesota, United States)</td></tr>
+                    <tr><td>50</td><td>41°N (Chicago, Illinois, United States)</td></tr>
+                    <tr><td>60</td><td>37°N (San Francisco, California, United States)</td></tr>
+                    <tr><td>70</td><td>33°N (Phoenix, Arizona, United States)</td></tr>
+                    <tr><td>80</td><td>27°N (Tampa Bay, Florida, United States)</td></tr>
+                    <tr><td>90</td><td>20°N (Mexico City, Mexico)</td></tr>
+                    <tr><td>100</td><td>&lt; 20°N (The Caribbean)</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is Solar Wind Speed?</h2>
+    <div class="home-info-box">
+        <p>Solar Wind Speed is a measure of how fast solar particles are approaching the earth. Higher speeds deliver more energy to the Earth’s magnetic field, powering geomagnetic storms
+</p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is Proton Density?</h2>
+    <div class="home-info-box">
+        <p>Proton Density is the amount of solar particles per cubic centimeter in the solar wind. Higher density means more particles in the atmosphere, which collide with gas molecules and create brighter, more intense auroral displays. 
+</p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is Bz?</h2>
+    <div class="home-info-box">
+        <p>Bz is the North - South vertical direction of the solar wind’s magnetic field. Opposite poles attract, so when the Bz 
+            points South (Bz < 0), strong storms can occur. Bz is the most important metric for auroras, as having a 
+            positive Bz can wipe out any other good data. </p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is Bt?</h2>
+    <div class="home-info-box">
+        <p>Bt is the total strength of the magnetic field carried by the solar wind. The higher this is, the higher the potential energy for a geomagnetic storm. 
+</p>
+    </div>
+</div>
+
+<div class="home-section-wrapper">
+    <h2 class="widget-header">What is ACE EPAM Proton Flux?</h2>
+    <div class="home-info-box">
+        <p>ACE EPAM Proton Flux is measurements from the Electron, Proton and Alpha Monitor on NASA’s ACE satellite. This tracks the protons moving approaching Earth. When the protons start rising, it is usually a good indicator that a CME is incoming. 
+</p>
+    </div>
+</div>
+
+<div class="home-section-wrapper" style="margin-bottom: 50px;">
+    <h2 class="widget-header">What is the KP index?</h2>
+    <div class="home-info-box">
+        <p>The KP Index is a global scale that ranges from 0 (lowest) to 9 (highest). This scale quantifies disturbances in the Earth’s magnetic field over a 3 hour window. KP Index indicates how far South the aurora viewing line moves.</p>
     </div>
 </div>
 

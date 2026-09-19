@@ -1025,8 +1025,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     calibrateFaqAnswerHeight();
 
+    const AURORA_POLL_MS = 30000;      // AURORA DATA PAGE UPDATE SPEED
+    const OTHER_POLL_MS  = 1800000; // HOME AND WEBCAM UPDATE SPEED
+
+    const isAuroraPage = !!document.getElementById('score-tab');
     updateWidgets();
-    setInterval(updateWidgets, 30000);
+    setInterval(updateWidgets, isAuroraPage ? AURORA_POLL_MS : OTHER_POLL_MS);
 });
 
 let faqResizeTimeout;

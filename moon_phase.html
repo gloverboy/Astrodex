@@ -178,6 +178,7 @@
             color: #ffffff;
             letter-spacing: -1px;
             line-height: 1.1;
+            text-align: center;
         }
 
         #phase-pct {
@@ -185,6 +186,7 @@
             margin-top: 15px;
             font-size: 26px;
             font-weight: 600;
+            text-align: center;
         }
 
         .loader {
@@ -497,7 +499,7 @@ init();
 
 setInterval(() => {
     executeSearch(lastLat, lastLon);
-}, 60000);
+}, 3600000); // UPDATE EVERY 1 HOUR
 </script>
 </body>
 </html>
